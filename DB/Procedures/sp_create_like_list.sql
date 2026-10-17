@@ -1,0 +1,2 @@
+-- This empty original scaffold is superseded by 02_like_list.sql.
+-- Run ../01_schema.sql, ../02_seed.sql, 01_user_product.sql, 02_like_list.sql.

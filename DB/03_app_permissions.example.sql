@@ -1,0 +1,5 @@
+-- Optional: run as DBA after replacing placeholders; never commit a real password.
+-- The procedures use MySQL's default SQL SECURITY DEFINER.
+-- CREATE USER 'esun_app'@'localhost' IDENTIFIED BY '<choose-a-strong-password>';
+-- GRANT EXECUTE ON esun.* TO 'esun_app'@'localhost';
+-- Do not grant this account table CRUD or schema modification permissions.
