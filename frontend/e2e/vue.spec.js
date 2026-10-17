@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test'
 
 test('real API registration, login, favorite CRUD and mobile layout', async ({ page }) => {
-  const errors: string[] = []
-  page.on('pageerror', error => errors.push(error.message))
+  const errors = []
+  page.on('pageerror', (error) => errors.push(error.message))
   const id = 'ui' + Date.now()
   await page.goto('/#/register')
   await expect(page.getByLabel('會員 ID')).toHaveCount(0)
@@ -12,15 +12,15 @@ test('real API registration, login, favorite CRUD and mobile layout', async ({ p
   await page.getByLabel('Email', { exact: true }).fill(id + '@example.test')
   await page.getByLabel('密碼', { exact: true }).fill('Browser-test123!')
   await page.getByLabel('確認密碼').fill('Browser-test123!')
-  await page.getByRole('button', { name: '建立帳戶' }).click()
-  await expect(page.getByRole('heading', { name: '歡迎回來' })).toBeVisible()
+  await page.getByRole('button', { name: '註冊', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '會員登入' })).toBeVisible()
   // Real rejected login must display a readable error without breaking the page.
   await page.getByLabel('密碼', { exact: true }).fill('wrong-password')
-  await page.getByRole('button', { name: '登入帳戶' }).click()
+  await page.getByRole('button', { name: '登入', exact: true }).click()
   await expect(page.getByRole('alert')).toContainText('Email 或密碼不正確')
   await page.getByLabel('密碼', { exact: true }).fill('Browser-test123!')
-  await page.getByRole('button', { name: '登入帳戶' }).click()
-  await expect(page.getByRole('heading', { name: '探索適合你的金融商品.' })).toBeVisible()
+  await page.getByRole('button', { name: '登入', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '商品列表' })).toBeVisible()
   await expect(page.locator('.product-card')).toHaveCount(6)
   await page.screenshot({ path: '../artifacts/products-desktop.png', fullPage: true })
   await page.getByRole('searchbox').fill('債券')
@@ -42,19 +42,20 @@ test('real API registration, login, favorite CRUD and mobile layout', async ({ p
   await page.reload()
   await expect(page.locator('tbody tr')).toHaveCount(1)
   await page.getByRole('button', { name: '刪除全球永續股票基金' }).click()
-  await page.getByRole('button', { name: '保留收藏' }).click()
+  await page.getByRole('button', { name: '取消', exact: true }).click()
   await expect(page.locator('tbody tr')).toHaveCount(1)
   await page.getByRole('button', { name: '刪除全球永續股票基金' }).click()
-  await page.getByRole('button', { name: '確認移除' }).click()
-  await expect(page.getByRole('heading', { name: '你的下一個喜好，從這裡開始' })).toBeVisible()
+  await page.getByRole('button', { name: '確認刪除' }).click()
+  await expect(page.getByText('目前沒有符合的收藏。')).toBeVisible()
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.getByRole('link', { name: '商品探索', exact: true }).click()
+  await page.getByRole('link', { name: '商品列表', exact: true }).click()
   await expect(page.locator('.product-card')).toHaveCount(6)
   await page.screenshot({ path: '../artifacts/products-mobile.png', fullPage: true })
-  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBeTruthy()
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),
+  ).toBeTruthy()
   await page.getByRole('button', { name: '登出' }).click()
-  await expect(page.getByRole('heading', { name: '歡迎回來' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '會員登入' })).toBeVisible()
   await page.screenshot({ path: '../artifacts/login-mobile.png', fullPage: true })
   expect(errors).toEqual([])
 })
-

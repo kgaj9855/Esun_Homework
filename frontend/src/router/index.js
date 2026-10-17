@@ -12,8 +12,12 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', redirect: '/products' },
   ],
 })
-router.beforeEach(async to => {
-  try { await loadSession() } catch { /* The page shows a useful connection error. */ }
+router.beforeEach(async (to) => {
+  try {
+    await loadSession()
+  } catch {
+    /* 連線失敗仍可開啟登入頁，送出表單時顯示錯誤。 */
+  }
   const publicPage = ['/login', '/register'].includes(to.path)
   if (!session.user && !publicPage) return '/login'
   if (session.user && publicPage) return '/products'

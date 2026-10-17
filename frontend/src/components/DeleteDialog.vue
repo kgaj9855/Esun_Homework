@@ -1,11 +1,21 @@
-<script setup lang="ts">
+<script setup>
 import { onMounted, ref } from 'vue'
-import type { Like } from '@/services/api'
-const props = defineProps<{ item: Like; busy: boolean }>()
-const emit = defineEmits<{ close: []; confirm: [] }>()
-const dialog = ref<HTMLDialogElement>()
-onMounted(() => dialog.value?.showModal())
+const props = defineProps({ item: Object, busy: Boolean })
+const emit = defineEmits(['close', 'confirm'])
+const dialog = ref(null)
+function close() {
+  if (!props.busy) emit('close')
+}
+onMounted(() => dialog.value.showModal())
 </script>
+
 <template>
-  <dialog ref="dialog" class="favorite-dialog delete-dialog" aria-labelledby="delete-title" @cancel.prevent="!props.busy && emit('close')"><span class="empty-icon">♡</span><h2 id="delete-title">移除這份喜好？</h2><p class="muted">「{{ item.productName }}」將從清單中移除，之後仍可重新收藏。</p><div class="dialog-actions"><button class="button secondary" :disabled="busy" autofocus @click="emit('close')">保留收藏</button><button class="button delete-button" :disabled="busy" @click="emit('confirm')">{{ busy ? '移除中…' : '確認移除' }}</button></div></dialog>
+  <dialog ref="dialog" aria-labelledby="delete-title" @cancel.prevent="close">
+    <h2 id="delete-title">刪除收藏</h2>
+    <p>確定刪除「{{ item.productName }}」？</p>
+    <div class="actions">
+      <button :disabled="busy" @click="emit('close')">取消</button>
+      <button :disabled="busy" @click="emit('confirm')">{{ busy ? '刪除中…' : '確認刪除' }}</button>
+    </div>
+  </dialog>
 </template>
